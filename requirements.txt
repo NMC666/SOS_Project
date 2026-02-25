@@ -1,0 +1,7 @@
+flask
+paho-mqtt
+psycopg2-binary
+redis
+geopy
+zlapi
+python-dotenv

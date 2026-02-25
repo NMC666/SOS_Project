@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS Dashboard Pro</title>
+
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <!-- Startup Loader Overlay -->
+    <div class="startup-loader" id="startupLoader">
+        <div class="loader-content">
+            <i class="fa-solid fa-satellite-dish loader-icon pulse-icon"></i>
+            <h2>SOS<span class="pro-tag">PRO</span></h2>
+            <div class="loading-bar">
+                <div class="loading-fill"></div>
+            </div>
+            <p id="loaderText">Initializing Secure Connection...</p>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar / Navigation -->
+        <nav class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-satellite-dish pulse-icon"></i>
+                <h1>SOS<span class="pro-tag">PRO</span></h1>
+            </div>
+
+            <div class="nav-links">
+                <a href="#" class="active" id="navLive"><i class="fa-solid fa-map-location-dot"></i> Live Tracker</a>
+                <a href="#" id="navHistory"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
+                <a href="#" id="navSettings"><i class="fa-solid fa-gear"></i> Settings</a>
+            </div>
+
+            <div class="connection-status">
+                <div class="status-indicator"></div>
+                <span id="connText">Connecting...</span>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <h2>Live Monitoring</h2>
+                <div class="header-actions">
+                    <button class="action-btn"><i class="fa-regular fa-bell"></i></button>
+                    <div class="user-profile">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="User">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Stats Grid -->
+            <section class="stats-grid">
+                <!-- Status Card -->
+                <div class="stat-card" id="statusCard">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-label">Current Status</span>
+                        <h3 class="stat-value" id="deviceStatus">UNKNOWN</h3>
+                    </div>
+                </div>
+
+                <!-- Battery Card -->
+                <div class="stat-card">
+                    <div class="stat-icon battery">
+                        <i class="fa-solid fa-battery-three-quarters" id="batteryIcon"></i>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-label">Device Battery</span>
+                        <h3 class="stat-value"><span id="batteryVal">0</span>%</h3>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="batteryBar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last Seen Card -->
+                <div class="stat-card">
+                    <div class="stat-icon clock">
+                        <i class="fa-solid fa-stopwatch"></i>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-label">Last Ping</span>
+                        <h3 class="stat-value" id="lastSeenVal">0s ago</h3>
+                        <span class="stat-subtext" id="lastSeenStr">Never</span>
+                    </div>
+                </div>
+
+                <!-- Safe Zone Card -->
+                <div class="stat-card">
+                    <div class="stat-icon location">
+                        <i class="fa-solid fa-draw-polygon"></i>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-label">Safe Zone Radius</span>
+                        <h3 class="stat-value"><span id="radiusVal">0</span> m</h3>
+                        <span class="stat-subtext">Geofence</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Map Section -->
+            <section class="map-section">
+                <div class="map-wrapper">
+                    <div id="map"></div>
+                    <div class="map-overlay">
+                        <button class="map-btn" onclick="centerMap()"><i class="fa-solid fa-crosshairs"></i></button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-gear"></i> Safe Zone Settings</h3>
+                <button class="close-btn" id="closeSettingsModal">&times;</button>
+            </div>
+            <form id="settingsForm">
+                <div class="form-group">
+                    <label for="inputLat">Config Latitude</label>
+                    <input type="number" step="any" class="form-control" id="inputLat" required>
+                </div>
+                <div class="form-group">
+                    <label for="inputLon">Config Longitude</label>
+                    <input type="number" step="any" class="form-control" id="inputLon" required>
+                </div>
+                <div class="form-group">
+                    <label for="inputRadius">Safe Zone Radius (m)</label>
+                    <input type="number" class="form-control" id="inputRadius" required>
+                </div>
+                <button type="submit" class="btn-primary">Save Configuration</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- History Panel Overlay -->
+    <div class="history-panel" id="historyPanel">
+        <div class="history-header">
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> History Playback</h3>
+            <button class="close-history-btn" id="closeHistoryBtn">&times;</button>
+        </div>
+        <div class="history-controls">
+            <button id="playHistoryBtn" class="history-btn"><i class="fa-solid fa-play"></i></button>
+            <div class="history-slider-container">
+                <input type="range" id="historySlider" min="0" max="100" value="0" class="history-slider">
+                <div class="history-time" id="historyTimeDisplay">--:--:--</div>
+            </div>
+            <div class="history-stats">Points: <span id="historyCount">0</span></div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Custom Script -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>
