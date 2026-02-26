@@ -1,4 +1,4 @@
-import paho.mqtt.client as mqtt
+import paho.mqtt.client as mqtt 
 import redis
 import time
 import threading
@@ -311,7 +311,7 @@ def on_message(client, userdata, msg):
 
 mqtt_client = mqtt.Client(
     mqtt.CallbackAPIVersion.VERSION2,
-    transport="tcp"
+    transport="websockets"
 )
 
 mqtt_client.on_connect = on_connect
