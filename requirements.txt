@@ -1,0 +1,6 @@
+flask
+paho-mqtt
+geopy
+zlapi
+python-dotenv
+firebase-admin

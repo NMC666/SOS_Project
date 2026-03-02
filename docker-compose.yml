@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: sos_web_app
+    ports:
+      - "5000:5000"
+    command: python app.py
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ./sos-system-928ae-firebase-adminsdk-fbsvc-cc01d315d4.json:/app/sos-system-928ae-firebase-adminsdk-fbsvc-cc01d315d4.json
+      - ./.env:/app/.env
+
+  engine:
+    build: .
+    container_name: sos_logic_engine
+    command: python logic.py
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ./sos-system-928ae-firebase-adminsdk-fbsvc-cc01d315d4.json:/app/sos-system-928ae-firebase-adminsdk-fbsvc-cc01d315d4.json
+      - ./.env:/app/.env
