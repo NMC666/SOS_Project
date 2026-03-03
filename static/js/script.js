@@ -314,6 +314,13 @@ function initHistory() {
     const timeDisplay = document.getElementById('historyTimeDisplay');
     const countDisplay = document.getElementById('historyCount');
 
+    // Helper to format date for datetime-local input
+    const formatDateTimeLocal = (date) => {
+        const d = new Date(date);
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+        return d.toISOString().slice(0, 16);
+    };
+
     // Enter History Mode
     navHistory.addEventListener('click', async (e) => {
         e.preventDefault();
@@ -324,9 +331,27 @@ function initHistory() {
         isHistoryMode = true;
         historyPanel.classList.add('active');
 
-        // Load data
+        // Initial dates setup (Last 24 hours)
+        const startInput = document.getElementById('historyStartTime');
+        const endInput = document.getElementById('historyEndTime');
+        if (startInput && endInput && !startInput.value) {
+            const now = new Date();
+            const past = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+            startInput.value = formatDateTimeLocal(past);
+            endInput.value = formatDateTimeLocal(now);
+        }
+
+        // Load data initially
         await loadHistoryData();
     });
+
+    // Apply Filter Button
+    const applyFilterBtn = document.getElementById('applyHistoryFilterBtn');
+    if (applyFilterBtn) {
+        applyFilterBtn.addEventListener('click', async () => {
+            await loadHistoryData();
+        });
+    }
 
     // Exit History Mode
     closeHistoryBtn.addEventListener('click', exitHistoryMode);
@@ -350,7 +375,20 @@ function initHistory() {
 
     async function loadHistoryData() {
         try {
-            const resp = await fetch('/api/history');
+            const startInput = document.getElementById('historyStartTime');
+            const endInput = document.getElementById('historyEndTime');
+
+            let queryUrl = '/api/history?limit=5000';
+
+            if (startInput && endInput && startInput.value && endInput.value) {
+                // Convert picker time (Local) to UNIX Timestamp
+                const startTs = Math.floor(new Date(startInput.value).getTime() / 1000);
+                const endTs = Math.floor(new Date(endInput.value).getTime() / 1000);
+
+                queryUrl = `/api/history?start_time=${startTs}&end_time=${endTs}&limit=5000`;
+            }
+
+            const resp = await fetch(queryUrl);
             const data = await resp.json();
 
             if (data && data.length > 0) {

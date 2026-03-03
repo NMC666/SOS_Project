@@ -163,6 +163,18 @@
             <h3><i class="fa-solid fa-clock-rotate-left"></i> History Playback</h3>
             <button class="close-history-btn" id="closeHistoryBtn">&times;</button>
         </div>
+        <div class="history-filters" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <label style="font-size: 0.9rem; color: var(--text-muted); padding-left: 5px;">From:</label>
+            <input type="datetime-local" id="historyStartTime" class="form-control"
+                style="padding: 0.5rem; width: auto; flex: 1; font-size: 0.9rem;">
+
+            <label style="font-size: 0.9rem; color: var(--text-muted);">To:</label>
+            <input type="datetime-local" id="historyEndTime" class="form-control"
+                style="padding: 0.5rem; width: auto; flex: 1; font-size: 0.9rem;">
+
+            <button id="applyHistoryFilterBtn" class="btn-primary"
+                style="margin-top: 0; padding: 0.5rem 1rem; width: auto; font-size: 0.9rem;">Filter</button>
+        </div>
         <div class="history-controls">
             <button id="playHistoryBtn" class="history-btn"><i class="fa-solid fa-play"></i></button>
             <div class="history-slider-container">

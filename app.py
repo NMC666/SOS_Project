@@ -127,7 +127,20 @@ def get_history():
     try:
         history_data = []
         if db:
-            docs = db.collection("gps_history").order_by("created_at", direction=firestore.Query.DESCENDING).limit(100).stream()
+            query = db.collection("gps_history").order_by("time_ts", direction=firestore.Query.DESCENDING)
+            
+            # Filter limits and times
+            limit_val = request.args.get("limit", default=100, type=int)
+            start_time = request.args.get("start_time", type=float)
+            end_time = request.args.get("end_time", type=float)
+            
+            if start_time is not None:
+                query = query.where("time_ts", ">=", start_time)
+            if end_time is not None:
+                query = query.where("time_ts", "<=", end_time)
+                
+            docs = query.limit(limit_val).stream()
+            
             for doc in docs:
                 data = doc.to_dict()
                 history_data.append({
