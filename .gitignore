@@ -1,6 +1,6 @@
 venv/
 __pycache__/
+.vscode/
 .env
-*.pyc
-clear_history.py
-*.json
+serviceAccountKey.json
+clear_firebase.py

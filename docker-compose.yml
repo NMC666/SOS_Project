@@ -12,7 +12,7 @@ services:
       - .env
     volumes:
       - .:/app
-      - ./sos-system-928ae-firebase-adminsdk-fbsvc-cc01d315d4.json:/app/sos-system-928ae-firebase-adminsdk-fbsvc-cc01d315d4.json
+      - ./serviceAccountKey.json:/app/serviceAccountKey.json
       - ./.env:/app/.env
 
   engine:
@@ -24,5 +24,5 @@ services:
       - .env
     volumes:
       - .:/app
-      - ./sos-system-928ae-firebase-adminsdk-fbsvc-cc01d315d4.json:/app/sos-system-928ae-firebase-adminsdk-fbsvc-cc01d315d4.json
+      - ./serviceAccountKey.json:/app/serviceAccountKey.json
       - ./.env:/app/.env
